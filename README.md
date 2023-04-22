@@ -1,0 +1,1 @@
+# Plag Checker - A plagiarism checker 👓
