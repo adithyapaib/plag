@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Plagiarism Checker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An Open-Sourced Plagiarism Checker that is made using Reverse Engineering Turnitin Website.">
+    <meta name="keywords" content="Plagiarism, Checker, Turnitin, Reverse Engineering, Open Source">
+    <meta name="author" content="Adithya Pai B">
+    <meta name="theme-color" content="#FFEA20">
+    <meta name="msapplication-navbutton-color" content="#FFEA20">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#FFEA20">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="google" content="nositelinkssearchbox">
+    <meta name="google" content="notranslate">
+    <link
+        href="https://fonts.googleapis.com/css?family=Poppins:100,100italic,200,200italic,300,300italic,regular,italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic"
+        rel="stylesheet" />
+    <link rel="shortcut icon" href="https://img.icons8.com/emoji/48/null/man-detective.png" type="image/x-icon">
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        background-color: #FFEA20;
+    }
+
+    .container {
+        padding: 3em;
+        text-align: center;
+    }
+
+    .title {
+        color: #000;
+        font-size: 2em;
+        font-weight: 700;
+        font-family: poppins;
+        text-align: center;
+    }
+
+    q {
+        font-size: 1.2em;
+        font-weight: 400;
+        margin-bottom: 1em;
+        font-family: poppins;
+        margin-top: 1em;
+    }
+
+    form {
+        margin-bottom: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 2em;
+    }
+
+    textarea {
+        width: 80%;
+        height: 40vh;
+        padding: 1em;
+        font-size: 18px;
+        border: none;
+        border-radius: 5px;
+        resize: none;
+        background: #f7f7f7e0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        color: rgb(0, 0, 0);
+        outline: none;
+        border: none;
+        margin-bottom: 2em;
+        font-family: poppins;
+        padding: 1em 2em;
+        border-radius: 20px;
+        transition: 0.4s ease;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        text-align: justify;
+        line-height: 2;
+    }
+
+    textarea:focus {
+        border: 5px solid #FFEA20;
+        border-radius: 50px;
+    }
+
+    textarea::placeholder {
+        color: #000000a5;
+    }
+
+    button {
+        padding: 1.3em 5em;
+        font-family: poppins;
+        color: #fff;
+        font-size: 1em;
+        font-weight: 600;
+        background-color: #000;
+        border: none;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #f7ea77;
+        color: #000;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000;
+        border-radius: 10px;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    body::-webkit-scrollbar-track {
+        background-color: #fde50e;
+        border-radius: 10px;
+    }
+
+    .loader {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        z-index: 1000;
+        width: 100%;
+        min-height: 100vh;
+        height: max-content;
+        background: #0000009d;
+        display: none;
+    }
+
+    .load {
+        display: block;
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        border: 10px solid #000;
+        border-top: 10px solid #FFEA20;
+        border-radius: 50%;
+        animation: spin 0.55s linear infinite;
+        overflow: hidden;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    #output {
+        margin-top: 30px;
+        font-size: 18px;
+        line-height: 1.5;
+    }
+
+    .result {
+        margin: 0 auto;
+        padding: 50px;
+        background-color: #ffffff;
+        color: #000;
+        letter-spacing: 2px;
+        border-radius: 50px 50px 0 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-wrap: wrap;
+        font: 1.2em poppins;
+    }
+
+    p {
+        font-size: 0.9em;
+        font-weight: 400;
+        margin-bottom: 1em;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-wrap: wrap;
+        text-align: justify;
+    }
+
+    ul a {
+        font-size: 0.8em;
+        font-weight: 400;
+        margin-bottom: 1em;
+    }
+
+    h5 {
+        margin-top: 2em;
+    }
+
+    @media screen and (max-width: 768px) {
+        button {
+            padding: 1em 2.2em;
+        }
+
+        textarea {
+            width: 90%;
+            font-size: 0.8em;
+            padding: 0.8em;
+        }
+
+        .container {
+            padding: 1em;
+
+        }
+
+        .title {
+            font-size: 1.6em;
+            margin-bottom: 0.5em;
+
+        }
+
+        q {
+
+            padding-top: 2em;
+            font-size: 0.9em;
+        }
+
+        .result {
+            font-size: 1em;
+            margin: 8px;
+            padding-left: 1.2em;
+            padding-right: 1.2em;
+            border-radius: 20px;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .result h2 {
+            font-size: 1em;
+        }
+
+        .result p {
+            font-size: 0.8em;
+            text-align: left;
+            overflow: hidden;
+            max-width: 100%;
+            word-wrap: break-word;
+            word-break: break-all;
+            margin-top: 0.8em;
+        }
+
+        .result ul a {
+            font-size: 0.8em;
+            text-align: left;
+            overflow: hidden;
+            max-width: 100%;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        .result h5 {
+            font-size: 0.8em;
+            margin-top: 1.5em;
+        }
+
+    }
+</style>
+
+<body>
+    <a href="https://github.com/adithyapaib">
+        <img src="https://img.icons8.com/glyph-neue/64/null/github.png" alt="GitHub Icon" style="float:right;">
+    </a>
+    <div class="container">
+        <h2 class="title">Plagiarism Checker 🔎📃</h2>
+        <q>A reverse Engineered OpenSource Turnitin based Plagiarism checker </q>
+
+        <form>
+            <textarea id="input" placeholder="Enter your text here" name="data"></textarea>
+            <button type="submit" id="submitBtn">Check Plagiarism</button>
+        </form>
+        <div class="loader">
+            <div class="load"></div>
+        </div>
+        <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M0 100L4.37114e-06 0L100 4.37114e-06C100 55.2285 55.2285 100 0 100ZM200 100C200 44.7716 155.228 1.88558e-05 100 4.37114e-06V100H0C-4.82822e-06 155.228 44.7715 200 100 200H200V100ZM199.961 100H100V200C100 144.785 144.75 100.021 199.961 100Z"
+            fill="url(#paint0_linear_1124_1297)"></path>
+    </div>
+    <div class="result">
+        <h2>Plagiarism Check Results</h2>
+        <br>
+        <div id="original-text">
+            <h5>Original Text:</h5>
+            <p></p>
+        </div>
+        <div id="matches">
+            <h5>Matches:</h5>
+            <ul></ul>
+        </div>
+        <div id="percentage">
+            <h5>Turnitin Index:</h5>
+            <i></i>
+        </div>
+        <div id="word_count">
+            <h5>Words Count:</h5>
+            <i></i>
+        </div>
+    </div>
+    <footer style="width: 100%; text-align: center; padding: 2em;">
+        <span>By <a href="https://adithyapai.com">Adithya Pai B</a> 🧲</span>
+    </footer>
+    <script>
+        console.log("Made with ❤️ by Adithya Pai B");
+       const _0x12f438=_0x38cb;(function(_0x329667,_0x4f361f){const _0x1acad9=_0x38cb,_0x37c4c9=_0x329667();while(!![]){try{const _0x2e0598=-parseInt(_0x1acad9(0x81))/0x1+-parseInt(_0x1acad9(0x7f))/0x2+-parseInt(_0x1acad9(0xa7))/0x3*(parseInt(_0x1acad9(0x78))/0x4)+parseInt(_0x1acad9(0x86))/0x5+parseInt(_0x1acad9(0xa6))/0x6+parseInt(_0x1acad9(0xa2))/0x7*(-parseInt(_0x1acad9(0x6a))/0x8)+-parseInt(_0x1acad9(0x98))/0x9*(-parseInt(_0x1acad9(0x7a))/0xa);if(_0x2e0598===_0x4f361f)break;else _0x37c4c9['push'](_0x37c4c9['shift']());}catch(_0x22e4b3){_0x37c4c9['push'](_0x37c4c9['shift']());}}}(_0x37ed,0xef1f9));const form=document['querySelector'](_0x12f438(0x9c)),submitBtn=document['querySelector'](_0x12f438(0x91)),loader=document[_0x12f438(0x6e)]('.loader'),output=document[_0x12f438(0x6e)](_0x12f438(0x95)),controller=new AbortController(),getData=async()=>{const _0x5775df=_0x12f438,_0x4dd693=document[_0x5775df(0x6e)](_0x5775df(0x9a))[_0x5775df(0xa8)];if(_0x4dd693[_0x5775df(0x71)]('\x20')[_0x5775df(0x9b)]<0xf){alert('Please\x20enter\x20at\x20least\x2015\x20words');return;}const _0x548d41={'data':_0x4dd693},_0x56a1ea=await fetch(window['location'][_0x5775df(0x7d)],{'method':_0x5775df(0x7b),'headers':{'Content-Type':_0x5775df(0x79)},'body':JSON[_0x5775df(0xa3)](_0x548d41)})[_0x5775df(0x74)](_0x4d621b=>_0x4d621b[_0x5775df(0x84)]())[_0x5775df(0x74)](_0x497fc3=>{const _0x269b90=_0x5775df,_0xa5b959=_0x497fc3[_0x269b90(0x70)],_0x2ef0cb=_0x497fc3[_0x269b90(0xa0)],_0x1eea7f=_0x497fc3[_0x269b90(0xa4)],_0x5c7873=_0x497fc3[_0x269b90(0x94)];document[_0x269b90(0x6e)]('#original-text\x20p')[_0x269b90(0x83)]=_0xa5b959;_0x1eea7f>0x0?document['querySelector'](_0x269b90(0x6b))[_0x269b90(0x83)]=_0x1eea7f+'%':document[_0x269b90(0x6e)](_0x269b90(0x6b))[_0x269b90(0x83)]='No\x20plagiarism\x20found';_0x5c7873!=undefined&&(document[_0x269b90(0x6e)](_0x269b90(0xa5))['textContent']=_0x5c7873);for(let _0x338ab3=0x0;_0x338ab3<_0x2ef0cb['length'];_0x338ab3++){const _0x4da7e6=_0x2ef0cb[_0x338ab3],_0x13a3f0=_0x4da7e6[_0x269b90(0x82)],_0x2fe380=_0x4da7e6['percent'],_0x401caf=_0x4da7e6[_0x269b90(0x75)],_0x20ed96=document['createElement']('li');_0x20ed96['innerHTML']=_0x269b90(0x8c)+_0x13a3f0+_0x269b90(0xaa)+_0x13a3f0+_0x269b90(0xa1)+_0x2fe380+'%)';const _0x5e3e2f=document[_0x269b90(0x77)]('ul');for(let _0x1e9bf5=0x0;_0x1e9bf5<_0x401caf[_0x269b90(0x9b)];_0x1e9bf5++){const _0x353422=_0x401caf[_0x1e9bf5],_0xacabf6=parseInt(_0x353422[0x0]),_0x4c5f5a=parseInt(_0x353422[0x1]);}_0x20ed96[_0x269b90(0x8e)](_0x5e3e2f),document[_0x269b90(0x6e)](_0x269b90(0x72))[_0x269b90(0x8e)](_0x20ed96);}})[_0x5775df(0x7c)](_0x290dbb=>console[_0x5775df(0x92)](_0x290dbb));};function _0x37ed(){const _0xca40e=['#matches\x20ul','style','then','highlight','.loader','createElement','1047804ihYzOG','application/json','10UqxbSo','POST','catch','href','display','415626DDEYYy','block','1465892GqAPYF','url','textContent','json','scrollIntoView','3331335pMIFxx','position','#original-text','overflowY','maxWidth','zIndex','<a\x20href=\x22','center','appendChild','width','height','#submitBtn','error','preventDefault','words_count','#output','addEventListener','150%','13876974dJOPjd','justifyContent','#input','length','form','hidden','9999','submitted','matches','</a>\x20(','497bEeTsa','stringify','percent','#word_count\x20i','11700546fwGjBf','3wxFbiL','value','100%','\x22\x20target=\x22_blank\x22>','140072LlMoBa','#percentage\x20i','absolute','none','querySelector','submit','text','split'];_0x37ed=function(){return _0xca40e;};return _0x37ed();}function _0x38cb(_0x378b9b,_0x1e6307){const _0x37ed12=_0x37ed();return _0x38cb=function(_0x38cb5e,_0x15bfcd){_0x38cb5e=_0x38cb5e-0x6a;let _0xa4bea4=_0x37ed12[_0x38cb5e];return _0xa4bea4;},_0x38cb(_0x378b9b,_0x1e6307);}form[_0x12f438(0x96)](_0x12f438(0x6f),async _0x1d4f42=>{const _0x33efb7=_0x12f438;_0x1d4f42[_0x33efb7(0x93)](),console['log'](_0x33efb7(0x9f));const _0x1b1731=document['querySelector'](_0x33efb7(0x76));_0x1b1731[_0x33efb7(0x73)][_0x33efb7(0x7e)]=_0x33efb7(0x80),_0x1b1731[_0x33efb7(0x73)][_0x33efb7(0x87)]=_0x33efb7(0x6c),_0x1b1731[_0x33efb7(0x73)][_0x33efb7(0x8f)]='100%',_0x1b1731[_0x33efb7(0x73)]['height']=_0x33efb7(0xa9),_0x1b1731['style'][_0x33efb7(0x7e)]='flex',_0x1b1731[_0x33efb7(0x73)][_0x33efb7(0x99)]='center',_0x1b1731['style']['alignItems']=_0x33efb7(0x8d),_0x1b1731['style'][_0x33efb7(0x8b)]=_0x33efb7(0x9e),_0x1b1731['style'][_0x33efb7(0x8a)]='100%',_0x1b1731[_0x33efb7(0x73)][_0x33efb7(0x90)]=_0x33efb7(0x97),_0x1b1731[_0x33efb7(0x73)][_0x33efb7(0x89)]=_0x33efb7(0x9d),await getData()[_0x33efb7(0x74)](()=>{const _0x40a1fc=_0x33efb7;_0x1b1731[_0x40a1fc(0x73)][_0x40a1fc(0x7e)]=_0x40a1fc(0x6d),document[_0x40a1fc(0x6e)](_0x40a1fc(0x88))[_0x40a1fc(0x85)]({'behavior':'smooth'});});});
+    </script>
+</body>
+
+</html>
